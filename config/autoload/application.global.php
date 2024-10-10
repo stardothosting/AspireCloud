@@ -13,7 +13,7 @@ return [
      * Database Configuration
      */
     'database' => [
-        'type'   => 'pgsql',
+        'type'   => getenv('DB_DRIVER') ?: 'pgsql',
         'host'   => $_ENV['DB_HOST'] ?? '',
         'name'   => $_ENV['DB_NAME'] ?? '',
         'user'   => $_ENV['DB_USER'] ?? '',
