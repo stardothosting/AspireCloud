@@ -56,6 +56,7 @@ quality-baseline: ## Run all static analysis checks with baseline
 install-composer: ## Install composer dependencies
 	docker compose run --rm webapp sh -c "curl -s https://getcomposer.org/installer | php;mv composer.phar /usr/local/bin/composer;composer install"
 
+
 logs-%: ## View logs (follow mode) for the container where % is a service name (webapp, postgres, node, nginx, smtp, rabbitmq)
 	docker compose logs -f $*
 
