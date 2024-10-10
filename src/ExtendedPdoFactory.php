@@ -13,13 +13,19 @@ class ExtendedPdoFactory
     {
         $config   = $serviceManager->get('config');
         $database = $config['database'];
+        
         $dsn      = sprintf('%s:host=%s;dbname=%s', $database['type'], $database['host'], $database['name']);
         $pdo      = new ExtendedPdo(
             $dsn,
             $database['user'],
-            $database['pass'],
+            $database['pass']
         );
-        $pdo->exec('SET search_path TO ' . $config['database']['schema']);
+
+        // If PostgreSQL, set schema
+        if ($database['type'] === 'pgsql') {
+            $pdo->exec('SET search_path TO ' . $config['database']['schema']);
+        }
+
         return $pdo;
     }
 }
