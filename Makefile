@@ -54,7 +54,7 @@ quality-baseline: ## Run all static analysis checks with baseline
 	docker compose run --rm webapp vendor/bin/phpstan analyse -b baseline.neon $(PHPSTAN_XDEBUG) src tests
 
 install-composer: ## Install composer dependencies
-	docker compose run --rm webapp bash -c "composer install"
+	docker compose run --rm webapp sh -c "curl -s https://getcomposer.org/installer | php;mv composer.phar /usr/local/bin/composer;composer install"
 
 logs-%: ## View logs (follow mode) for the container where % is a service name (webapp, postgres, node, nginx, smtp, rabbitmq)
 	docker compose logs -f $*
@@ -116,8 +116,15 @@ reset-database: _empty-database migrate seed ## Clean database, run migrations a
 
 reset-testing-database: _empty-testing-database migrate-testing seed-testing
 
-run-pgsql: ## Runs Postgres on the command line using the .env file variables
-	docker compose run --rm webapp sh -c "export PGPASSWORD=${DB_PASS} && psql -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME}"
+run-db: ## Runs the database shell on the command line using the .env file variables
+	ifeq ($(DB_DRIVER), mysql)
+		docker compose run --rm webapp sh -c "mysql -u${DB_USERNAME} -p${DB_PASSWORD} -h ${DB_HOST} ${DB_DATABASE}"
+	else ifeq ($(DB_DRIVER), pgsql)
+		docker compose run --rm webapp sh -c "export PGPASSWORD=${DB_PASSWORD} && psql -U ${DB_USERNAME} -h ${DB_HOST} -d ${DB_DATABASE}"
+	else ifeq ($(DB_DRIVER), sqlite)
+		docker compose run --rm webapp sh -c "sqlite3 ${DB_DATABASE}.db"
+	endif
+
 
 network: ## Create application docker network
 	@bin/create-external-network.sh

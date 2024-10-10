@@ -28,7 +28,8 @@
         "ramsey/composer-repl": "^1.4",
         "ramsey/uuid": "^4.7",
         "robmorgan/phinx": "^0.16.0",
-        "webmozart/assert": "^1.11"
+        "webmozart/assert": "^1.11",
+        "doctrine/dbal": "^3.0"
     },
     "require-dev": {
         "behat/behat": "^3.11",

@@ -10,6 +10,7 @@ use Phinx\Console\PhinxApplication;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Doctrine\DBAL\Schema\Schema;
 
 class DbHelper
 {
@@ -39,10 +40,14 @@ class DbHelper
      */
     public static function setupDb(): void
     {
-        $pdo = self::configurePdo();
+        $schemaManager = $this->db->createSchemaManager();
 
-        $pdo->exec('DROP SCHEMA IF EXISTS ' . self::DB_NAME . ' CASCADE');
-        $pdo->exec('CREATE SCHEMA ' . self::DB_NAME);
+        if ($schemaManager->tablesExist(['plugins'])) {
+            $schemaManager->dropTable('plugins');
+        }
+
+        $schema = new Schema();
+        $myTable = $schema->createTable('plugins');
 
         $phinx   = new PhinxApplication();
         $command = $phinx->find('migrate');
